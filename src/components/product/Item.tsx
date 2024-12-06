@@ -1,28 +1,10 @@
-type Product = {
-    name: string
-    sku: string
-    thumbnail: {
-        url: string
-    }
-    price_range: {
-        minimum_price: {
-            regular_price: {
-                value: number
-                currency: string
-            }
-        }
-    }
-}
+import { useProductList } from "../../hooks/useProductList"
 
-interface ItemProps {
-    item: Product
-
-}
-
-export const Item = ({ item }: ItemProps) => {
+export const Item = () => {
+    const { items } = useProductList()
     return (
-        <>
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden group hover:shadow-2xl transition-shadow duration-300">
+        items?.map((item, index) =>
+            <div key={index} className="bg-white shadow-lg rounded-lg overflow-hidden group hover:shadow-2xl transition-shadow duration-300">
                 <img src={item.thumbnail.url} alt="Product Image 1" className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300" />
                 <div className="p-4">
                     <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
@@ -33,8 +15,7 @@ export const Item = ({ item }: ItemProps) => {
                     </div>
                 </div>
             </div>
-        </>
-
+        )
     )
 }
 

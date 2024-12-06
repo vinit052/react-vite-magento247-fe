@@ -1,53 +1,52 @@
-
-import { useMutation } from "@apollo/client"
-import { FormEvent, useState } from "react"
+import { FormEvent, useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
-import { LOGIN_MUTATION } from "../api/loginMutation"
-
+import useLogin from "../hooks/useLogin"
 
 export const Login = () => {
 
-    const [userEmail, setUserEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [username, setUsername] = useState<string | null>("")
+    const [password, setPassword] = useState<string | null>("")
+    const usernameRef = useRef<HTMLInputElement>(null)
+    const passwordRef = useRef<HTMLInputElement>(null)
 
-    const [loginError, setLoginError] = useState(null)
-    const [token, setToken] = useState(null)
-
-
-    const [callLoginMutation] = useMutation(LOGIN_MUTATION, {
-        onCompleted: (data) => {
-            const token = (data?.generateCustomerToken?.token)
-            setToken(token)
-            localStorage.setItem('token', token)
-        },
-        onError: (error) => {
-            console.log("Login error")
-            console.log(error)
+    useEffect(() => {
+        if (usernameRef.current) {
+            usernameRef.current.focus();
         }
-    })
+
+        if (passwordRef.current) {
+            passwordRef.current.focus();
+        }
+    }, [username, password])
+
+    const { error, authenticate, handleLogin } = useLogin()
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        if (username === null || password === null) {
+            return
+        }
         e.preventDefault()
-        callLoginMutation({
-            variables: {
-                username: userEmail,
-                password: password
-            }
-        })
+        handleLogin(username, password)
+    }
+
+    if (authenticate) {
+        return <h3 className="text-right">You have logged in successfully</h3>
     }
 
     return (
         <>
-            <div className="max-w-screen-lg mx-auto p-3 bg-white border border-gray-300 rounded-lg shadow-lg">
+            <div className="max-w-screen-lg w-[400px] p-5 bg-white border border-gray-300 rounded-lg shadow-lg">
                 <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
+
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Email</label>
                         <input
-                            onChange={(e) => setUserEmail(e.target.value)}
+                            onChange={(e) => setUsername(e.target.value)}
                             type="email"
                             id="email"
                             name="email"
+                            ref={usernameRef}
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             placeholder="Enter your email"
                         />
@@ -59,6 +58,7 @@ export const Login = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             type="password"
                             id="password"
+                            ref={passwordRef}
                             name="password"
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             placeholder="Enter your password"
@@ -78,6 +78,7 @@ export const Login = () => {
                         <Link to="/signup" className="text-blue-600 hover:text-blue-800">Sign up</Link>
                     </p>
                 </div>
+                {(error != null && (<p className="text-red-500 text-sm mt-4">{error}</p>))}
             </div>
 
         </>

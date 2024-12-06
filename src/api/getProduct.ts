@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
-export const GET_PRODUCT = gql`query($searchText: String,$pageSize: Int, $currentPage:Int){
-  products(search: $searchText, pageSize: $pageSize, currentPage: $currentPage) {
+export const GET_PRODUCT = gql`query($text: String,$pageSize: Int, $currentPage:Int){
+  products(search: $text, pageSize: $pageSize, currentPage: $currentPage) {
     total_count
     items {
       name

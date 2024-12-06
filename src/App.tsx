@@ -1,13 +1,12 @@
 import ProductList from "./pages/ProductSearch"
-import { useState } from "react"
-import { SearchContext } from "./context/SerachContext"
+
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import { Home } from "./pages/Home"
 import { Root } from "./pages/Root"
 import { Error } from "./pages/Error"
 import { Login } from "./pages/Login"
 import { Signup } from "./pages/Signup"
-
+import { AppContext } from "./context/AppContext"
 
 function App() {
   const router = createBrowserRouter([
@@ -36,17 +35,11 @@ function App() {
     }
   ]);
 
-  const intialParamsValue = {
-    text: "",
-    currentPage: 1,
-    pageSize: 4
-  }
-  const [params, setParams] = useState<{ text: string; currentPage: number; pageSize: number }>(intialParamsValue);
   return (
     <>
-      <SearchContext.Provider value={{ params, setParams }}>
+      <AppContext>
         <RouterProvider router={router} />
-      </SearchContext.Provider>
+      </AppContext>
     </>
   )
 }
